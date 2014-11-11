@@ -1,1 +1,4 @@
-#vendor
+vendor
+coverage
+build
+phpunit.dist.xml
