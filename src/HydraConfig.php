@@ -108,10 +108,11 @@
     */
     public function replace_ranges_with_numbers($config){
       $new_config = array();
+      $self = $this;
       foreach($config as $key => $value){
-        $new_key = preg_replace_callback($this->range_pattern, function($matches) use ($key){
+        $new_key = preg_replace_callback($this->range_pattern, function($matches) use ($key, $self){
           if(count($matches)){
-            $original_number = $this->get_data_for_range($key);
+            $original_number = $self->get_data_for_range($key);
             $round_number = round($original_number);
             list($start, $end) = preg_split("/\.|\[|\]/", $matches[0],-1, PREG_SPLIT_NO_EMPTY);
             $amount = (in_array($round_number, range($start, $end))) ? $original_number : 'N';
