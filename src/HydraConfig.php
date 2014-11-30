@@ -52,27 +52,14 @@
   *   array('referer_id' => 0, 'system_id' => 1)
   * )
   */
-  class HydraConfig {
+  abstract class HydraConfig {
 
-    private static $configs = array();
-    public static $settings = array();
-    public static $namespace = 'hydra';
-
-    public function __construct($data, $config){
-      if(!is_array($data))
-        throw new InvalidArgumentException('Data must be an associative array with parameters array("key" => "value").  What do you expect sending '.$data.' to HydraConfig?');
-      if(!is_array($config) || !count($config))
-        throw new InvalidArgumentException('Config must be an associative array HydraConfig format. See examples in HydraConfig source file');
-      
+    public function __construct(){
       $this->delimiter = "\_";
       $this->any = "\*";
       $this->range_pattern = "/\[\d+\.\.\d+\]/";
       $this->range_index = null;
       $this->range_data = null;
-      $this->data = $data;
-      $this->config = $this->replace_ranges_with_numbers($config);
-      $this->config_keys = array_keys($this->config);
-      $this->priority_table = $this->build_priority_table();
     }
     public function define_range_position($key){
       $heads = preg_split("/$this->delimiter/", $key);
@@ -155,7 +142,7 @@
     *
     * @return Array - масив варіантів
     */
-    private function build_priority_table(){
+    public function build_priority_table(){
       $heads_count = $this->get_heads_count();
       $data_keys = array_keys($this->data);
       $columns_count = pow(2, $heads_count) - 1; 
@@ -163,7 +150,7 @@
       $variations = array();
 
       if(count($data_keys) !== $heads_count)
-        throw new LengthException('Data params count MUST BE equal to params count defined in hydra configuration: '/*.self::get_hydra_analog_config_name($this->config_name)*/);
+        throw new LengthException('Data params count MUST BE equal to params count defined in hydra configuration');
 
       foreach($numbers as $num){
         $str = sprintf("%0".$heads_count."d", decbin($num)); // e.g 011
@@ -178,7 +165,7 @@
     * @param Array - варіант таблиці пріоритетів
     * @return string - regex pattern 
     */
-    private function regex_transform($item){
+    public function regex_transform($item){
       $pattern = "";
       foreach($item as $key => $value){
         $pattern .= ($value && isset($this->data[$key])) ? $this->data[$key] : $this->any;
