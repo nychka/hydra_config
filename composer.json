@@ -1,5 +1,16 @@
 {
+    "name": "hydra/hydra-config",
+    "description": "provides the best option from configuration based on passed data",
+    "homepage": "http://github.com/nychka/hydra_config",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nychka Yaroslav",
+            "email": "nychka93@gmail.com"
+        }
+    ],
     "require-dev": {
+        "php": ">=5.3.0",
         "phpunit/phpunit": "4.3.4",
         "codeclimate/php-test-reporter": "dev-master"
     },
