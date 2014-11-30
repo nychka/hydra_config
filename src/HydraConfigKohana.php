@@ -184,4 +184,3 @@
       return $this->original_config;
     }
   }
-?>
