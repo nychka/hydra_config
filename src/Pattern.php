@@ -22,7 +22,6 @@ abstract class Pattern
         return ($extracted) ? $original_number : 'N';
       }
     }, $key);
-    if($key !== $new_key)$key = $new_key;
     return $new_key;
   }
   /**
@@ -48,8 +47,8 @@ abstract class Pattern
   public function get_data_for_range($key){
     $data = $this->hydra->get_data();
     $keys = $this->hydra->get_data_keys();
-    if(!$this->range_data){
-      if(!$this->range_index){
+    if(!isset($this->range_data)){
+      if(!isset($this->range_index)){
         $this->range_index = $this->define_range_position($key);
       }
       $keys = array_keys($data);

@@ -84,4 +84,41 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($result, 'range between 102 and 200 successed');
 	}
+	public function testGreaterThanPattern()
+	{
+		$data = array(
+			'foo' => 12,
+			'bar' => 'BAR',
+			'num' => 201
+		);
+		$config = array(
+			'12_*_*' => 'foo_and_*_and_*',
+			'12_BAR_*' => 'foo_and_bar_and_*',
+			'12_BAR_[>200]' => 'number is greater than 200 successed',
+			'12_BAR_[50..100]' => 'range between 50 and 100 successed',
+		);
+		$hydra = new HydraConfigArray($data, $config);
+		$result = $hydra->find();
+
+		$this->assertEquals($result, 'number is greater than 200 successed');
+	}
+	public function testGreaterThanPattern2()
+	{
+		$data = array(
+			'foo' => 12,
+			'bar' => 'BAR',
+			'num' => 99
+		);
+		$config = array(
+			'12_*_*' => 'foo_and_*_and_*',
+			'12_BAR_*' => 'foo_and_bar_and_*',
+			'12_BAR_[50..100]' => 'range between 50 and 100 successed',
+			'12_BAR_[>200]' => 'number is greater than 200 successed',
+			'12_BAR_[>99]' => 'number is greater than 99 successed',
+		);
+		$hydra = new HydraConfigArray($data, $config);
+		$result = $hydra->find();
+
+		$this->assertEquals($result, 'range between 50 and 100 successed');
+	}
 }

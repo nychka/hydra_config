@@ -59,7 +59,10 @@
       $this->any = "\*";
       $this->range_index = null;
       $this->range_data = null;
-      $this->patterns = array(new RangePattern($this));
+      $this->patterns = array(
+        new RangePattern($this),
+        new GreaterThanPattern($this)
+      );
     }
     /**
     * Заміняє діапазони чисел числом з масиву даних, якщо воно входить в нього, в інакшому випадку 'N'
@@ -82,10 +85,11 @@
     }
     public function transform_numbers($key){
       $patternObj = $this->patterns[0];
+      $new_key = $key;
       foreach($this->patterns as $patternObj){
-        $patternObj->transform(&$key);
+        $new_key = $patternObj->transform($new_key);
       }
-      return $key;
+      return $new_key;
     }
     /**
     * Визначає кіл-ть параметрів для побудови таблиці пріоритетів
@@ -138,6 +142,9 @@
     }
     public function get_delimiter(){
       return $this->delimiter;
+    }
+    public function get_data(){
+      return $this->data;
     }
     public function get_data_keys(){
       if(!isset($this->data_keys)){
