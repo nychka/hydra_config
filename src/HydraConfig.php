@@ -57,32 +57,9 @@
     public function __construct(){
       $this->delimiter = "\_";
       $this->any = "\*";
-      $this->range_pattern = "/\[\d+\.\.\d+\]/";
       $this->range_index = null;
       $this->range_data = null;
-    }
-    public function define_range_position($key){
-      $heads = preg_split("/$this->delimiter/", $key);
-      foreach($heads as $index => $head){
-        preg_match($this->range_pattern, $head, $out);
-        if(count($out))return $index;
-      }
-    }
-    /**
-    * Знаходить число з масиву даних, яке відповідає діапазону чисел у конфігурації
-    *
-    * @return number
-    */
-    public function get_data_for_range($key){
-      if(!$this->range_data){
-        if(!$this->range_index)
-          $this->range_index = $this->define_range_position($key);
-
-        $keys = array_keys($this->data);
-        $string_index = $keys[$this->range_index];
-        $this->range_data = $this->data[$string_index];
-      }
-      return $this->range_data;
+      $this->patterns = array(new RangePattern($this));
     }
     /**
     * Заміняє діапазони чисел числом з масиву даних, якщо воно входить в нього, в інакшому випадку 'N'
@@ -97,23 +74,18 @@
       $new_config = array();
       $self = $this;
       foreach($config as $key => $value){
-        $new_key = preg_replace_callback($this->range_pattern, function($matches) use ($key, $self){
-          if(count($matches)){
-            $original_number = $self->get_data_for_range($key);
-            $round_number = round($original_number);
-            list($start, $end) = preg_split("/\.|\[|\]/", $matches[0],-1, PREG_SPLIT_NO_EMPTY);
-            $amount = $self->in_range($round_number, $start, $end) ? $original_number : 'N';
-            return $amount;
-          }
-        }, $key);
+        $new_key = $this->transform_numbers($key);
         $new_config[$new_key] = $value;
       }
-      //echo "<pre>"; print_r($new_config); echo "</pre>";
+      echo "<pre>"; print_r($new_config); echo "</pre>";
       return $new_config;
     }
-    public function in_range($num, $start, $end){
-      //(in_array($round_number, range($start, $end)))
-      return ($num >= $start && $num <= $end);
+    public function transform_numbers($key){
+      $patternObj = $this->patterns[0];
+      foreach($this->patterns as $patternObj){
+        $patternObj->transform(&$key);
+      }
+      return $key;
     }
     /**
     * Визначає кіл-ть параметрів для побудови таблиці пріоритетів
@@ -148,13 +120,13 @@
     */
     public function build_priority_table(){
       $heads_count = $this->get_heads_count();
-      $data_keys = array_keys($this->data);
+      $data_keys = $this->get_data_keys();//array_keys($this->data);
       $columns_count = pow(2, $heads_count) - 1; 
       $numbers = range($columns_count, 1);
       $variations = array();
 
       if(count($data_keys) !== $heads_count)
-        throw new LengthException('Data params count MUST BE equal to params count defined in hydra configuration');
+        throw new \LengthException('Data params count MUST BE equal to params count defined in hydra configuration');
 
       foreach($numbers as $num){
         $str = sprintf("%0".$heads_count."d", decbin($num)); // e.g 011
@@ -163,6 +135,15 @@
         $variations[] = $variation;
       }
       return $variations;
+    }
+    public function get_delimiter(){
+      return $this->delimiter;
+    }
+    public function get_data_keys(){
+      if(!isset($this->data_keys)){
+        $this->data_keys = array_keys($this->data);
+      }
+      return $this->data_keys;
     }
     /**
     * Будує шаблон згідно варіанту таблиці пріоритетів та даних

@@ -17,4 +17,7 @@ class HydraConfigArray extends HydraConfig
     $this->config_keys = array_keys($this->config);
     $this->priority_table = $this->build_priority_table();
   }
+  public function get_Data(){
+    return $this->data;
+  }
 }
