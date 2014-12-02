@@ -102,7 +102,7 @@
             $original_number = $self->get_data_for_range($key);
             $round_number = round($original_number);
             list($start, $end) = preg_split("/\.|\[|\]/", $matches[0],-1, PREG_SPLIT_NO_EMPTY);
-            $amount = (in_array($round_number, range($start, $end))) ? $original_number : 'N';
+            $amount = $self->in_range($round_number, $start, $end) ? $original_number : 'N';
             return $amount;
           }
         }, $key);
@@ -110,6 +110,10 @@
       }
       //echo "<pre>"; print_r($new_config); echo "</pre>";
       return $new_config;
+    }
+    public function in_range($num, $start, $end){
+      //(in_array($round_number, range($start, $end)))
+      return ($num >= $start && $num <= $end);
     }
     /**
     * Визначає кіл-ть параметрів для побудови таблиці пріоритетів

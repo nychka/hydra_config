@@ -66,4 +66,22 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($result, 'range between 50 and 100 successed');
 	}
+	public function testRangeParameter2()
+	{
+		$data = array(
+			'foo' => 12,
+			'bar' => 'BAR',
+			'num' => 102
+		);
+		$config = array(
+			'12_*_*' => 'foo_and_*_and_*',
+			'12_BAR_*' => 'foo_and_bar_and_*',
+			'12_BAR_[102..200]' => 'range between 102 and 200 successed',
+			'12_BAR_[50..101]' => 'range between 50 and 100 successed',
+		);
+		$hydra = new HydraConfigArray($data, $config);
+		$result = $hydra->find();
+
+		$this->assertEquals($result, 'range between 102 and 200 successed');
+	}
 }
