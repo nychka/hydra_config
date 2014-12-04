@@ -51,8 +51,10 @@
         throw new InvalidArgumentException('Data must be an associative array with parameters array("key" => "value").  What do you expect sending '.$data.' to HydraConfig?');
       if(!(count($data) > 1))
         throw new LengthException('Data length for HydraConfig must be more than one - see examples in HydraConfig source file');
+      if(!count(self::get_config(self::get_hydra_config_name($config_name))))
+        throw new UnexpectedValueException('Requested config: '.self::get_hydra_config_name($config_name).' is empty');
 
-      $hydra = new HydraConfig($data, $config_name);
+      $hydra = new HydraConfigKohana($data, $config_name);
       self::$configs[$config_name] = $hydra;
       return $hydra;
     }
