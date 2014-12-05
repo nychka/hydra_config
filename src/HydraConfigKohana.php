@@ -172,7 +172,7 @@
     */
     public function wrap_config(){
       $config = $this->find();
-      $final_config = (!self::is_hydra_compatible($this->config_name)) ? array_merge($this->original_config, $config) : $config;
+      $final_config = (!self::is_hydra_compatible($this->config_name) && is_array($config)) ? array_merge($this->original_config, $config) : $config;
       self::set_config($this->config_name,  $final_config);
       $this->final_config = $config;
       return $config;
