@@ -57,4 +57,13 @@ abstract class Pattern
     }
     return $this->range_data;
   }
+  /**
+  * Перевіряє строку згідно шаблону
+  *
+  * @param string $match
+  * @return array
+  */
+  public function get_result($match){
+    return preg_split($this->extractPattern, $match,-1, PREG_SPLIT_NO_EMPTY);
+  }
 }

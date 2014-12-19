@@ -18,7 +18,7 @@
   * @return bool
   */
   public function extract($match, $round_num){
-    list($start, $end) = preg_split($this->extractPattern, $match,-1, PREG_SPLIT_NO_EMPTY);
+    list($start, $end) = $this->get_result($match);
     return ($round_num >= $start && $round_num <= $end);
   }
  }

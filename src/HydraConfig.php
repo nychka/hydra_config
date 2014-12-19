@@ -61,7 +61,10 @@
       $this->range_data = null;
       $this->patterns = array(
         new RangePattern($this),
-        new GreaterThanPattern($this)
+        new ComparisonSignPattern($this, '>'),
+        new ComparisonSignPattern($this, '>='),
+        new ComparisonSignPattern($this, '<'),
+        new ComparisonSignPattern($this, '<=')
       );
     }
     /**

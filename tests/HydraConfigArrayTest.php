@@ -102,7 +102,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($result, 'number is greater than 200 successed');
 	}
-	public function testGreaterThanPattern2()
+	public function testComparisonSignPatternMore()
 	{
 		$data = array(
 			'foo' => 12,
@@ -120,5 +120,62 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 		$result = $hydra->find();
 
 		$this->assertEquals($result, 'range between 50 and 100 successed');
+	}
+	public function testComparisonSignPatternMoreEqual()
+	{
+		$data = array(
+			'foo' => 12,
+			'bar' => 'BAR',
+			'num' => 200
+		);
+		$config = array(
+			'12_*_*' => 'foo_and_*_and_*',
+			'12_BAR_*' => 'foo_and_bar_and_*',
+			'12_BAR_[>=200]' => 'number is greater equals 200 successed',
+			'12_BAR_[50..100]' => 'range between 50 and 100 successed',
+			'12_BAR_[>200]' => 'number is greater than 200 successed',
+		);
+		$hydra = new HydraConfigArray($data, $config);
+		$result = $hydra->find();
+
+		$this->assertEquals($result, 'number is greater equals 200 successed');
+	}
+	public function testComparisonSignPatternLess()
+	{
+		$data = array(
+			'foo' => 12,
+			'bar' => 'BAR',
+			'num' => 4
+		);
+		$config = array(
+			'12_*_*' => 'foo_and_*_and_*',
+			'12_BAR_*' => 'foo_and_bar_and_*',
+			'12_BAR_[<5]' => 'number is less than 5 successed',
+			'12_BAR_[5..10]' => 'range between 5 and 10 successed',
+			'12_BAR_[>10]' => 'number is greater than 10 successed',
+		);
+		$hydra = new HydraConfigArray($data, $config);
+		$result = $hydra->find();
+
+		$this->assertEquals($result, 'number is less than 5 successed');
+	}
+	public function testComparisonSignPatternLessEqual()
+	{
+		$data = array(
+			'foo' => 12,
+			'bar' => 'BAR',
+			'num' => 5
+		);
+		$config = array(
+			'12_*_*' => 'foo_and_*_and_*',
+			'12_BAR_*' => 'foo_and_bar_and_*',
+			'12_BAR_[<=5]' => 'number is less equals 5 successed',
+			'12_BAR_[6..10]' => 'range between 5 and 10 successed',
+			'12_BAR_[>10]' => 'number is greater than 10 successed',
+		);
+		$hydra = new HydraConfigArray($data, $config);
+		$result = $hydra->find();
+
+		$this->assertEquals($result, 'number is less equals 5 successed');
 	}
 }
