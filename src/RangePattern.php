@@ -7,8 +7,8 @@
   public function __construct($hydra)
   {
     $this->hydra = $hydra;
-    $this->pattern = "/\[\d+\.\.\d+\]/";
-    $this->extractPattern = "/\.|\[|\]/";
+    $this->pattern = "/\[\d+\-\d+\]/";
+    $this->extractPattern = "/\-|\[|\]/";
   }
   /**
   * Перевіряє число згідно правила

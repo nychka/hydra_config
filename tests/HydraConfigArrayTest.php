@@ -16,7 +16,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 		$config = array(
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
-			'12_BAR_[50..101]' => 'range between 50 and 100 successed'
+			'12_BAR_[50-101]' => 'range between 50 and 100 successed'
 		);
 		$hydra = new HydraConfigArray($data, $config);
 	}
@@ -59,7 +59,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 		$config = array(
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
-			'12_BAR_[50..101]' => 'range between 50 and 100 successed'
+			'12_BAR_[50-101]' => 'range between 50 and 100 successed'
 		);
 		$hydra = new HydraConfigArray($data, $config);
 		$result = $hydra->find();
@@ -76,8 +76,8 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 		$config = array(
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
-			'12_BAR_[102..200]' => 'range between 102 and 200 successed',
-			'12_BAR_[50..101]' => 'range between 50 and 100 successed',
+			'12_BAR_[102-200]' => 'range between 102 and 200 successed',
+			'12_BAR_[50-101]' => 'range between 50 and 100 successed',
 		);
 		$hydra = new HydraConfigArray($data, $config);
 		$result = $hydra->find();
@@ -95,7 +95,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
 			'12_BAR_[>200]' => 'number is greater than 200 successed',
-			'12_BAR_[50..100]' => 'range between 50 and 100 successed',
+			'12_BAR_[50-100]' => 'range between 50 and 100 successed',
 		);
 		$hydra = new HydraConfigArray($data, $config);
 		$result = $hydra->find();
@@ -112,7 +112,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 		$config = array(
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
-			'12_BAR_[50..100]' => 'range between 50 and 100 successed',
+			'12_BAR_[50-100]' => 'range between 50 and 100 successed',
 			'12_BAR_[>200]' => 'number is greater than 200 successed',
 			'12_BAR_[>99]' => 'number is greater than 99 successed',
 		);
@@ -132,7 +132,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
 			'12_BAR_[>=200]' => 'number is greater equals 200 successed',
-			'12_BAR_[50..100]' => 'range between 50 and 100 successed',
+			'12_BAR_[50-100]' => 'range between 50 and 100 successed',
 			'12_BAR_[>200]' => 'number is greater than 200 successed',
 		);
 		$hydra = new HydraConfigArray($data, $config);
@@ -151,7 +151,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
 			'12_BAR_[<5]' => 'number is less than 5 successed',
-			'12_BAR_[5..10]' => 'range between 5 and 10 successed',
+			'12_BAR_[5-10]' => 'range between 5 and 10 successed',
 			'12_BAR_[>10]' => 'number is greater than 10 successed',
 		);
 		$hydra = new HydraConfigArray($data, $config);
@@ -170,7 +170,7 @@ class HydraConfigArrayTest extends \PHPUnit_Framework_TestCase
 			'12_*_*' => 'foo_and_*_and_*',
 			'12_BAR_*' => 'foo_and_bar_and_*',
 			'12_BAR_[<=5]' => 'number is less equals 5 successed',
-			'12_BAR_[6..10]' => 'range between 5 and 10 successed',
+			'12_BAR_[6-10]' => 'range between 5 and 10 successed',
 			'12_BAR_[>10]' => 'number is greater than 10 successed',
 		);
 		$hydra = new HydraConfigArray($data, $config);
