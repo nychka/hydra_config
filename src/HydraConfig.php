@@ -55,6 +55,7 @@
   abstract class HydraConfig {
 
     public function __construct(){
+      $this->measure_start(__FUNCTION__);
       $this->delimiter = "\_";
       $this->any = "\*";
       $this->range_index = null;
@@ -66,6 +67,36 @@
         new ComparisonSignPattern($this, '<'),
         new ComparisonSignPattern($this, '<=')
       );
+      $this->measure_end(__FUNCTION__);
+    }
+    public function get_debug_info()
+    {
+      return $this->debug;
+    }
+    public function measure_start($method_name)
+    {
+      if(!isset($this->debug)) $this->debug = array('total_time/ms' => 0, 'total_memory/kb' => 0);
+
+      if(!isset($this->debug[$method_name])){
+        $this->debug[$method_name] = array('time' => array(), 'memory' => array());
+      } 
+      $this->debug[$method_name]['time']['start'] = microtime(true);
+      $this->debug[$method_name]['memory']['start'] = memory_get_usage();
+    }
+    public function measure_end($method_name)
+    {
+      $this->debug[$method_name]['time']['end'] = microtime(true);
+      $this->debug[$method_name]['memory']['end'] = memory_get_usage();
+      $time_end = $this->debug[$method_name]['time']['end'];
+      $time_start = $this->debug[$method_name]['time']['start'];
+
+      $memory_end = $this->debug[$method_name]['memory']['end'];
+      $memory_start = $this->debug[$method_name]['memory']['start'];
+
+      $this->debug[$method_name]['total/ms'] = ($time_end - $time_start) * 1000; // miliseconds
+      $this->debug['total_time/ms'] += $this->debug[$method_name]['total/ms'];
+      $this->debug[$method_name]['total/kb'] = ($memory_end - $memory_start) / 1024; // kilobytes
+      $this->debug['total_memory/kb'] += $this->debug[$method_name]['total/kb'];
     }
     /**
     * Заміняє діапазони чисел числом з масиву даних, якщо воно входить в нього, в інакшому випадку 'N'
@@ -77,13 +108,15 @@
     * @return array конфіг із заміненими діапазонами на цілі числа
     */
     public function replace_ranges_with_numbers($config){
+      $this->measure_start(__FUNCTION__);
       $new_config = array();
       $self = $this;
       foreach($config as $key => $value){
         $new_key = $this->transform_numbers($key);
         $new_config[$new_key] = $value;
       }
-      echo "<pre>"; print_r($new_config); echo "</pre>";
+      // echo "<pre>"; print_r($new_config); echo "</pre>";
+      $this->measure_end(__FUNCTION__);
       return $new_config;
     }
     public function transform_numbers($key){
@@ -98,12 +131,32 @@
     * Визначає кіл-ть параметрів для побудови таблиці пріоритетів
     * @return Number
     */
-    public function get_heads_count(){
-      $key = $this->config_keys[0];
+    public function get_heads_count($config_key = null){
+      $this->measure_start(__FUNCTION__);
+      $key = $config_key ? $config_key : $this->config_keys[0];
       $heads = preg_split("/$this->delimiter/", $key);
+      $this->measure_end(__FUNCTION__);
       return count($heads);
     }
 
+    /**
+    * Перевіряє чи кіл-ть параметрів в конфігурації дорівнює кіл-ті переданих параметрів даних
+    *
+    * @param array $data_keys
+    * @return bool
+    */
+    public function check_heads_count($data_keys){
+      $this->measure_start(__FUNCTION__);
+      $heads_count_should_be = count($data_keys);
+      foreach($this->config_keys as $key){
+        $hydra_params_count = $this->get_heads_count($key);
+        if($hydra_params_count !== $heads_count_should_be){
+          throw new LengthException("Invalid key: $key - data params count: $heads_count_should_be MUST BE equal to params count: $hydra_params_count defined in hydra configuration");
+        }
+      }
+      $this->measure_end(__FUNCTION__);
+      return true;
+    }
     /**
     * Формує таблицю пріоритетів
     * | параметри | варіанти |
@@ -126,14 +179,14 @@
     * @return Array - масив варіантів
     */
     public function build_priority_table(){
+      $this->measure_start(__FUNCTION__);
       $heads_count = $this->get_heads_count();
       $data_keys = $this->get_data_keys();//array_keys($this->data);
       $columns_count = pow(2, $heads_count) - 1; 
       $numbers = range($columns_count, 1);
       $variations = array();
 
-      if(count($data_keys) !== $heads_count)
-        throw new \LengthException('Data params count MUST BE equal to params count defined in hydra configuration');
+      $this->check_heads_count($data_keys);
 
       foreach($numbers as $num){
         $str = sprintf("%0".$heads_count."d", decbin($num)); // e.g 011
@@ -141,6 +194,7 @@
         foreach($data_keys as $key => $value) $variation[$value] = $str[$key];
         $variations[] = $variation;
       }
+      $this->measure_end(__FUNCTION__);
       return $variations;
     }
     public function get_delimiter(){
@@ -173,6 +227,7 @@
     * @return Array
     */
     public function find(){
+      $this->measure_start(__FUNCTION__);
       foreach($this->priority_table as $value){
         $pattern = $this->regex_transform($value);
         $search_results = preg_grep("/$pattern/", $this->config_keys);
@@ -180,9 +235,11 @@
         if(count($search_results)){
           $arr = array_values($search_results);
           $value = array_shift($arr);
+          $this->measure_end(__FUNCTION__);
           return $this->config[$value];
         }
       }
+      $this->measure_end(__FUNCTION__);
       return array();
     }
   }
